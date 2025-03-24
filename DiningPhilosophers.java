@@ -1,3 +1,5 @@
+package ThreadsAndLocks.DiningPhilosophers;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -75,8 +77,10 @@ class Philosopher implements Runnable {
     private void eatUsingChopsticks() {
         while (bytesEaten < Philosopher.TOTAL_BYTES_TO_EAT) {
             try {
-                chopLock1.tryLock(2, TimeUnit.SECONDS);
-                chopLock2.tryLock(2, TimeUnit.SECONDS);
+                if (!chopLock1.tryLock(2, TimeUnit.SECONDS))
+                    throw new InterruptedException("could not get get lock for chopstick1");
+                if (!chopLock2.tryLock(2, TimeUnit.SECONDS))
+                    throw new InterruptedException("could not get get lock for chopstick2");
                 chopStick1.use(this);
                 chopStick2.use(this);
 
